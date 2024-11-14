@@ -1,0 +1,25 @@
+#airInfo {
+    box-shadow: 0 0 5px rgba(112, 145, 180, .3);
+    display: flex;
+    flex-wrap: wrap; /* 允许换行 */
+    gap: 10px; /* 增加间距 */
+    margin-top: 20px;
+    margin-left: 6%;
+    margin-right: 6%;
+}
+
+.air-data-box {
+    display: inline-block;
+    padding: 5px;
+    background-color: #081832;
+    color: #0D8BBD;
+}
+.airspan{
+    display: flex;
+    align-items: center;
+    width: 45%;
+    color: #0D8BBD;
+    margin-left: 5px;
+    margin-bottom: 15px;
+    
+}

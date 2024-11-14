@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>空气监测</title>
+    
+    <link href="./moud222/styles/bianlan.css" rel="stylesheet">
+    <link href="./moud222/styles/common.css" rel="stylesheet">
+    
+    <script src="./moud222/scripts/Plugin/jquery-3.3.1.min.js"></script>
+    <!-- <script src="../scripts/common.js"></script> -->
+    <!-- <script src="../scripts/index.js"></script> -->
+    <!-- <script src="../scripts/Plugin/laydate/laydate.js"></script> -->
+   <!-- cdn -->
+   <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/ol@v7.3.0/dist/ol.js"></script>
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.3.0/ol.css">
+   <script src="https://code.jquery.com/jquery-3.7.1.slim.js" integrity="sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc=" crossorigin="anonymous"></script>
+   <!-- ----- -->
+    <script src="./moud222/scripts/Plugin/bmap.min.js"></script>
+
+    <!-- 地图api -->
+    <script src="http://api.map.baidu.com/api?v=3.0&ak=uv0LPOf1Kfhpuiw8ltbHuT32V7tcChDA"></script>
+    <!-- <script type="text/javascript" src="http://api.tianditu.gov.cn/api?v=4.0&tk=14c17def3d0f7a646e3d4dd23365fc06"></script> -->
+    <!-- <script src="https://webapi.amap.com/maps?v=2.0&key=615a656f8fda817abfebe598af64bfb1"></script> -->
+    <!-- --------- -->
+    
+    <!-- 制图 -->
+    <script src="./moud222/scripts/test/anyang.js"></script>  
+    <script src="./moud222/scripts/test/anyangdata.js"></script>
+   
+    <!-- ---- -->
+    
+    <!-- <script src="../scripts/map.js"></script> -->
+    
+
+
+
+
+</head>
+<body>
+<!--顶部-->
+<header class="header left">
+    <div class="left nav">
+        <ul>
+            <li class="nav_active"><i class="nav_1"></i><a href="">门户</a> </li>
+            <li><i class="nav_2"></i>><a href="/">首页</a></li>
+            <li><i class="nav_3"></i>占位 </li>
+            <li><i class="nav_4"></i>占位 </li>
+            </ul>
+    </div>
+    <div class="header_center left" style="position:relative">
+        <h2><strong><a>地图</a></strong></h2>
+
+    </div>
+    <div class="right nav text_right">
+        <ul>
+
+        </ul>
+    </div>
+
+</header>
+<!--内容部分-->
+<div class="con left">
+   
+    
+    <!--统计分析图-->
+    <div class="div_any">
+        <div class="div_airdata left">
+            <div class="div_any_child div_height">
+                <div class="div_any_title"><img src="./moud222/images/title_1.png">数据视图1</div>
+                <div id="map2Chart" style="width:97.5%;height:95%;display: inline-block;padding-left: 1.25%;padding-top:2.2%">
+                    <div id="airInfo">
+                        <span class="airspan">温度<br><div class="tem air-data-box"></div>℃</span>
+                        <span class="airspan">风速<br><div class="MXSPD air-data-box"></div>m/s</span>
+                        <span class="airspan">能见度<br><div class="VISIB air-data-box"></div>km</span>
+                        <span class="airspan">气压<br><div class="SLP air-data-box"></div>hPa</span>
+                        <span class="airspan">降水<br><div class="PRCP air-data-box"></div>mm</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="div_any02 left ">
+            <div class="div_any_child div_height">
+                <div class="div_any_title any_title_width"><img src="./moud222/images/title_0.png">地图 </div>
+                <div id="mapChart" style="width:97.5%;height:95%;display: inline-block;padding-left: 1.25%;padding-top:2.2%"></div>
+            </div>
+        </div>
+        <!-- <div class="right div_any01">
+            <div class="div_any_child">
+                <div class="div_any_title"><img src="./moud222/images/title_3.png">数据视图3</div>
+                <p id="lineChart" class="p_chart"></p>
+            </div>
+            <div class="div_any_child">
+                <div class="div_any_title"><img src="./moud222/images/title_4.png">视图4</div>
+                <div id="amap" style="width:97.5%;height:95%;display: inline-block;padding-left: 1.25%;padding-top:2.2%"></div>
+            </div>
+        </div> -->
+    </div>
+    <script src="./moud222/scripts/map4.js"></script>
+</div>
+</style>
+
+</body>
+</html>

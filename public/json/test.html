@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>栅格数据展示到百度地图上</title>
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=uv0LPOf1Kfhpuiw8ltbHuT32V7tcChDA"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        #map {
+            width: 100%;
+            height: 500px;
+            position: relative;
+        }
+        #chartCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 500px;
+            pointer-events: none; /* 确保地图交互不受影响 */
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <canvas id="chartCanvas"></canvas>
+
+    <script>
+        // 初始化百度地图
+        var map = new BMap.Map("map");
+        var point = new BMap.Point(116.404, 39.915); // 定义中心点坐标
+        map.centerAndZoom(point, 15); // 初始化地图，设置中心点坐标和地图级别
+
+        // 添加控件和覆盖物
+        map.addControl(new BMap.MapTypeControl());
+        map.setCurrentCity("北京"); // 设置地图显示的城市 此项是必须设置的
+        map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
+
+        // 添加栅格图层
+        var imgOverlay = new BMap.GroundOverlay(new BMap.Bounds(
+            new BMap.Point(116.391, 39.901),
+            new BMap.Point(116.417, 39.929)
+        ));
+        imgOverlay.setImageURL('./DEWP5.tif'); // 设置栅格图片的URL
+        map.addOverlay(imgOverlay);
+
+        // 使用 Chart.js 在地图上绘制图表
+        var ctx = document.getElementById('chartCanvas').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar', // 图表类型
+            data: {
+                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                datasets: [{
+                    label: '# of Votes',
+                    data: [12, 19, 3, 5, 2, 3],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

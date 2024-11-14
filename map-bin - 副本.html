@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+<head>
+    <meta charset="utf-8">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@latest/dist/echarts.min.js"></script>
+    <script src="http://api.map.baidu.com/api?v=3.0&ak=uv0LPOf1Kfhpuiw8ltbHuT32V7tcChDA"></script>
+</head>
+<body style="height: 100%; margin: 0">
+    <div id="main" style="height: 100%"></div>
+    <script type="text/javascript">
+        var chart = echarts.init(document.getElementById('main'));
+
+        var data = [
+            [116.01078662655334, 36.19521067581114, 11.893005668318246],
+            [116.02164090002081, 36.19521067581114, 15.232237919856502],
+            [116.03249517348829, 36.19521067581114, 15.363416161964851],
+            [116.04334944695576, 36.19521067581114, 14.708181487605424],
+            [116.05420372042323, 36.19521067581114, 8.112526810040308],
+            [116.0650579938907, 36.19521067581114, 8.235403095062113],
+            [116.07591226735818, 36.19521067581114, 8.373863923996472],
+            [116.08676654082565, 36.19521067581114, 8.852220504401394],
+            [116.09762081429312, 36.19521067581114, 8.56721777826275],
+            [116.1084750877606, 36.19521067581114, 8.56721777826275],
+            [116.11932936122807, 36.19521067581114, 8.329036677687855],
+            [116.13018363469554, 36.19521067581114, 8.154933625742654],
+            [116.14103790816301, 36.19521067581114, 8.758938970953935],
+            [116.15189218163049, 36.19521067581114, 7.174034228982581],
+            [116.16274645509796, 36.19521067581114, 15.06704615101759],
+            [116.17360072856543, 36.19521067581114, 12.372293338289113],
+            [116.1844550020329, 36.19521067581114, 11.903588408401124],
+            [116.19530927550038, 36.19521067581114, 6.503145891800277],
+            [116.20616354896785, 36.19521067581114, 5.170316162502247]
+        ];
+
+        // 定义颜色映射的范围
+        var minValue = Math.min(...data.map(item => item[2]));
+        var maxValue = Math.max(...data.map(item => item[2]));
+
+        chart.setOption({
+            bmap: {
+                center: [116.09762081429312, 36.19521067581114],
+                zoom: 12,
+                roam: true,
+                mapStyle: {
+                    styleJson: [{
+                        "featureType": "water",
+                        "elementType": "all",
+                        "stylers": {
+                            "color": "#d1d1d1"
+                        }
+                    }, {
+                        "featureType": "land",
+                        "elementType": "all",
+                        "stylers": {
+                            "color": "#f3f3f3"
+                        }
+                    }]
+                }
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: function (params) {
+                    return 'Value: ' + params.value[2];
+                }
+            },
+            visualMap: {
+                min: minValue,
+                max: maxValue,
+                calculable: true,
+                realtime: true,
+                inRange: {
+                    color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
+                },
+                textStyle: {
+                    color: '#000'
+                }
+            },
+            series: [{
+                type: 'scatter',
+                coordinateSystem: 'bmap',
+                data: data,
+                symbolSize: 12,
+                encode: {
+                    lng: 0,
+                    lat: 1,
+                    value: 2
+                },
+                itemStyle: {
+                    normal: {
+                        color: function (params) {
+                            return chart.getOption().visualMap[0].inRange.color[Math.floor((params.data[2] - minValue) / (maxValue - minValue) * 10)];
+                        }
+                    }
+                }
+            }]
+        });
+        chart.getModel().getComponent('bmap').getBMap().addControl(new BMap.NavigationControl());
+    </script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="shortcut icon" href="img/favicon.ico">
+</head>
+<body>
+    <section>
+        
+        <!-- 登录 -->
+
+        <div class="container">
+            <div class="user singinBx">
+                <div class="imgBx"><img src="img/1.jpg" alt=""></div>
+                <div class="formBx">
+                    <form method="post" action="/login">
+                        <h2>登录</h2>
+                        <input type="text" id="username" name="username" placeholder="用户名" required>
+                        <input type="password" id="password" name="password" placeholder="密码" required>
+                        <input type="submit" name="" value="登录">
+                        <p class="signup">没有账号？<a href="#" onclick="topggleForm();">注册</a></p>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 注册 -->
+
+            <div class="user singupBx">
+                <div class="formBx">
+                    <form method="post" action="/register">
+                        <h2>注册</h2>
+                        <input type="text" id="username" name="username" placeholder="用户名" required>
+                        <input type="email" name="" placeholder="邮箱地址">
+                        <input type="password" id="password" name="password" placeholder="密码" required>
+                        <input type="password" name="" placeholder="再次输入密码">
+                        <input type="submit" name="" value="注册">
+                        <p class="signup">已有账号？<a href="#" onclick="topggleForm();">登录</a></p>
+                    </form>
+                </div>
+                <div class="imgBx"><img src="img/2.jpg" alt=""></div>
+            </div>
+
+        </div>
+
+<!--                                         biaoshi               -->
+
+<!-- <h1>Login</h1>
+    <form method="post" action="/login">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+      <br>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+      <br>
+      <button type="submit">Login</button>
+    </form>
+
+    <h1>Register</h1>
+    <form method="post" action="/register">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+      <br>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+      <br>
+      <button type="submit">Register</button>
+    </form> -->
+
+<!--               biaoshi -->
+        
+    </section>
+    <script type="text/javascript">
+        function topggleForm(){
+            var container = document.querySelector('.container');
+            container.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

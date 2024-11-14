@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <!-- 引入 ECharts 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script>
+    <!-- 引入百度地图 API -->
+    <script src="http://api.map.baidu.com/api?v=3.0&ak=uv0LPOf1Kfhpuiw8ltbHuT32V7tcChDA"></script>
+    <!-- 引入百度地图扩展 -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/extension/bmap.min.js"></script>
+</head>
+<body style="height: 100%; margin: 0">
+    <div id="mapChart" style="height: 100%"></div>
+    <script>
+        var chart = echarts.init(document.getElementById('mapChart'));
+        
+        var option = {
+            bmap: {
+                center: [113.58239, 34.68757], // 设置地图中心点
+                zoom: 7,
+                roam: true
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            visualMap: {
+                type: "piecewise",
+                splitNumber: 7,
+                pieces: [
+                    {min: 500},
+                    {min: 250, max: 500},
+                    {min: 150, max: 250},
+                    {min: 115, max: 150},
+                    {min: 75, max: 115},
+                    {min: 35, max: 75},
+                    {min: 0, max: 35},
+                ],
+                left: 'left',
+                top: 'top',
+                calculable: true,
+                inRange: {
+                    color: ['#74c01f', '#d4cf18', '#fa8718', '#d12b2b', '#9d2124', '#691888', '#000000']
+                }
+            },
+            series: []
+        };
+
+        chart.setOption(option);
+
+        const csvData = `longitude,latitude,value
+113.69031,34.76122,138.1839696
+113.65724,34.77134,137.3781232
+113.67526,34.80246,82.85062515
+113.56746,34.81334,72.35044932
+113.7329,34.7178,109.406831
+113.73961,34.77172,131.1677257
+113.60532,34.74838,101.768024
+113.64164,34.7525,112.5496
+113.51488,34.91089,71.5407986
+112.3628,34.6692,62.81863209
+112.3931,34.6516,125.0138266
+112.4333,34.67,98.15223799
+112.4657,34.6871,115.4091422
+112.494,34.6886,123.0750575
+112.3844,34.623,89.96245454
+112.4267,34.6258,116.5743976
+114.4839,36.0621,65.53614264
+114.3551,36.1017,81.84769383
+114.361,36.0681,118.5258906
+114.3931,36.0883,90.58797862
+114.286,36.11,60.46814815
+114.3406,34.8022,75.44439589
+114.3389,34.7781,157.409813
+114.3733,34.7975,64.58771818
+111.1922,34.7752,57.55054911
+111.1587,34.7942,167.5641792
+111.1858,34.7917,74.37350751
+111.143,34.7955,76.72488013
+114.2878,35.7306,52.37053734
+113.926,35.279,77.57135115
+113.836,35.311,145.91844
+113.884,35.272,106.7759661
+113.883,35.303,106.0899246
+113.8208,34.0314,80.54149857
+113.7906,33.9953,66.02703576
+114.051,33.5699,150.1873066
+114.0055,33.5698,123.0861315
+114.0138,33.5828,167.1644173
+114.0261,33.5698,191.159922
+112.5192,32.9917,80.98442507
+112.5339,33.0086,129.2604825
+112.5003,32.9735,102.8116135
+112.5779,33.0144,97.90910928
+112.548,32.9692,100.164285`;
+
+        // 解析CSV数据
+        function parseCSVData(data) {
+            const lines = data.split('\n');
+            const result = [];
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].split(',');
+                const longitude = parseFloat(line[0]);
+                const latitude = parseFloat(line[1]);
+                const value = parseFloat(line[2]);
+                if (!isNaN(longitude) && !isNaN(latitude) && !isNaN(value)) {
+                    result.push([longitude, latitude, value]);
+                }
+            }
+            return result;
+        }
+
+        // 转换数据格式为ECharts系列格式
+        function convertToSeries(data) {
+            return data.map(item => [item[0], item[1], item[2]]);
+        }
+
+        // 处理CSV数据
+        const parsedData = parseCSVData(csvData);
+        const series = convertToSeries(parsedData);
+        chart.setOption({
+            series: [{
+                type: 'heatmap',
+                coordinateSystem: 'bmap',
+                data: series,
+                pointSize: 5,
+                blurSize: 6
+            }]
+        });
+
+        // 在ECharts初始化完成后获取BMap实例
+        setTimeout(function () {
+            var bmap = chart.getModel().getComponent('bmap').getBMap();
+            bmap.addControl(new BMap.MapTypeControl({
+                mapTypes: [BMAP_NORMAL_MAP, BMAP_SATELLITE_MAP, BMAP_HYBRID_MAP]
+            }));
+            bmap.addControl(new BMap.ScaleControl());
+            
+            // 禁用双击缩放
+            bmap.disableDoubleClickZoom();
+
+            bmap.addEventListener('click', function(e) {
+                alert('点击的经纬度：' + e.point.lng + ', ' + e.point.lat);
+                var mercator = bmap.lngLatToMercator(new BMap.Point(e.point.lng, e.point.lat));
+                alert('点的墨卡托坐标：' + mercator.lng + ', ' + mercator.lat);
+            });
+        }, 500); // 延迟500毫秒
+    </script>
+</body>
+</html>

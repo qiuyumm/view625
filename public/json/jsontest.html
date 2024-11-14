@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+<head>
+    <meta charset="utf-8">
+    <title>ECharts结合百度地图示例</title>
+    <!-- 引入ECharts脚本 -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+    <!-- 引入百度地图API脚本 -->
+    <script src="https://api.map.baidu.com/api?v=3.0&ak=uv0LPOf1Kfhpuiw8ltbHuT32V7tcChDA"></script>
+    <!-- 引入百度地图ECharts扩展 -->
+    <script src="https://api.map.baidu.com/library/Mapv/1.3.0/src/Mapv.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts-extension-bmap@latest"></script>
+</head>
+<body style="height: 100%; margin: 0">
+    <!-- 创建一个用于展示地图的div -->
+    <div id="map" style="height: 100%"></div>
+
+    <script type="text/javascript">
+        // 初始化百度地图
+        var map = new BMap.Map("map");
+        var point = new BMap.Point(116.404, 39.915);
+        map.centerAndZoom(point, 5);
+
+        // 初始化ECharts实例
+        var myChart = echarts.init(document.getElementById('map'));
+
+        // 加载GeoJSON数据（这里以一个示例GeoJSON为例）
+        var geoJson = {
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature",
+                    "properties": {"name": "某行政区域"},
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [[[116.404, 39.915], [116.405, 39.920], [116.406, 39.919], [116.404, 39.915]]]
+                    }
+                }
+                // 你可以添加更多的Feature对象来表示更多的行政区域
+            ]
+        };
+
+        // 配置ECharts选项
+        var option = {
+          bmap: {
+            center: [113.58239, 34.68757],
+            zoom: 7,
+            roam: true,
+  
+        },
+            series: [{
+                type: 'lines',
+                coordinateSystem: 'bmap',
+                data: geoJson.features.map(function (feature) {
+                    return {
+                        coords: feature.geometry.coordinates[0]
+                    };
+                }),
+                polyline: true,
+                lineStyle: {
+                    color: 'red',
+                    width: 2
+                }
+            }]
+        };
+
+        // 使用配置项生成图表
+        myChart.setOption(option);
+
+        // 将ECharts与百度地图关联
+        var bmap = myChart.getModel().getComponent('bmap').getBMap();
+        bmap.addControl(new BMap.NavigationControl());
+        bmap.addControl(new BMap.ScaleControl());
+    </script>
+</body>
+</html>

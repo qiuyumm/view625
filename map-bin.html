@@ -1,0 +1,302 @@
+<!--
+	此示例下载自 https://echarts.apache.org/examples/zh/editor.html?c=map-bin
+-->
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+<head>
+  <meta charset="utf-8">
+</head>
+<body style="height: 100%; margin: 0">
+  <div id="container" style="height: 100%"></div>
+
+  
+  <script type="text/javascript" src="https://registry.npmmirror.com/echarts/5.5.1/files/dist/echarts.min.js"></script>
+  <script src="http://api.map.baidu.com/api?v=3.0&ak=uv0LPOf1Kfhpuiw8ltbHuT32V7tcChDA"></script>
+
+  <!-- Uncomment this line if you want to dataTool extension
+  <script type="text/javascript" src="https://registry.npmmirror.com/echarts/5.5.1/files/dist/extension/dataTool.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to use gl extension
+  <script type="text/javascript" src="https://registry.npmmirror.com/echarts-gl/2/files/dist/echarts-gl.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to echarts-stat extension
+  <script type="text/javascript" src="https://registry.npmmirror.com/echarts-stat/latest/files/dist/ecStat.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to echarts-graph-modularity extension
+  <script type="text/javascript" src="https://registry.npmmirror.com/echarts-graph-modularity/2/files/dist/echarts-graph-modularity.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to use map
+  <script type="text/javascript" src="https://registry.npmmirror.com/echarts/4.9.0/files/map/js/world.js"></script>
+  -->
+  <script type="text/javascript" src="https://registry.npmmirror.com/echarts/5.5.1/files/dist/extension/bmap.min.js"></script>
+ 
+
+  <script type="text/javascript">
+    var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var app = {};
+    
+    var option;
+
+    var COLORS = ['#070093', '#1c3fbf', '#1482e5', '#70b4eb', '#b4e0f3', '#ffffff'];
+var lngExtent = [39.5, 40.6];
+var latExtent = [115.9, 116.8];
+var cellCount = [50, 50];
+var cellSizeCoord = [
+  (lngExtent[1] - lngExtent[0]) / cellCount[0],
+  (latExtent[1] - latExtent[0]) / cellCount[1]
+];
+var gapSize = 0;
+// prettier-ignore
+var data =  [
+        [116.01078662655334, 36.19521067581114, 11.893005668318246],
+        [116.02164090002081, 36.19521067581114, 15.232237919856502],
+        [116.03249517348829, 36.19521067581114, 15.363416161964851],
+        [116.04334944695576, 36.19521067581114, 14.708181487605424],
+        [116.05420372042323, 36.19521067581114, 8.112526810040308],
+        [116.0650579938907, 36.19521067581114, 8.235403095062113],
+        [116.07591226735818, 36.19521067581114, 8.373863923996472],
+        [116.08676654082565, 36.19521067581114, 8.852220504401394],
+        [116.09762081429312, 36.19521067581114, 8.56721777826275],
+        [116.1084750877606, 36.19521067581114, 8.56721777826275],
+        [116.11932936122807, 36.19521067581114, 8.329036677687855],
+        [116.13018363469554, 36.19521067581114, 8.154933625742654],
+        [116.14103790816301, 36.19521067581114, 8.758938970953935],
+        [116.15189218163049, 36.19521067581114, 7.174034228982581],
+        [116.16274645509796, 36.19521067581114, 15.06704615101759],
+        [116.17360072856543, 36.19521067581114, 12.372293338289113],
+        [116.1844550020329, 36.19521067581114, 11.903588408401124],
+        [116.19530927550038, 36.19521067581114, 6.503145891800277],
+        [116.20616354896785, 36.19521067581114, 5.170316162502247],
+      ];
+function renderItem(params, api) {
+  var context = params.context;
+  var lngIndex = api.value(0);
+  var latIndex = api.value(1);
+  var coordLeftTop = [
+    +(latExtent[0] + lngIndex * cellSizeCoord[0]).toFixed(6),
+    +(lngExtent[0] + latIndex * cellSizeCoord[1]).toFixed(6)
+  ];
+  var pointLeftTop = getCoord(params, api, lngIndex, latIndex);
+  var pointRightBottom = getCoord(params, api, lngIndex + 1, latIndex + 1);
+  return {
+    type: 'rect',
+    shape: {
+      x: pointLeftTop[0],
+      y: pointLeftTop[1],
+      width: pointRightBottom[0] - pointLeftTop[0],
+      height: pointRightBottom[1] - pointLeftTop[1]
+    },
+    style: api.style({
+      stroke: 'rgba(0,0,0,0.1)'
+    }),
+    styleEmphasis: api.styleEmphasis()
+  };
+}
+function getCoord(params, api, lngIndex, latIndex) {
+  var coords = params.context.coords || (params.context.coords = []);
+  var key = lngIndex + '-' + latIndex;
+  // bmap returns point in integer, which makes cell width unstable.
+  // So we have to use right bottom point.
+  return (
+    coords[key] ||
+    (coords[key] = api.coord([
+      +(latExtent[0] + lngIndex * cellSizeCoord[0]).toFixed(6),
+      +(lngExtent[0] + latIndex * cellSizeCoord[1]).toFixed(6)
+    ]))
+  );
+}
+option = {
+  backgroundColor: 'transparent',
+  tooltip: {},
+  visualMap: {
+    type: 'piecewise',
+    inverse: true,
+    top: 10,
+    left: 10,
+    pieces: [
+      {
+        value: 0,
+        color: COLORS[0]
+      },
+      {
+        value: 1,
+        color: COLORS[1]
+      },
+      {
+        value: 2,
+        color: COLORS[2]
+      },
+      {
+        value: 3,
+        color: COLORS[3]
+      },
+      {
+        value: 4,
+        color: COLORS[4]
+      },
+      {
+        value: 5,
+        color: COLORS[5]
+      }
+    ],
+    borderColor: '#ccc',
+    borderWidth: 2,
+    backgroundColor: '#eee',
+    dimension: 2,
+    inRange: {
+      color: COLORS,
+      opacity: 0.7
+    }
+  },
+  series: [
+    {
+      type: 'custom',
+      coordinateSystem: 'bmap',
+      renderItem: renderItem,
+      animation: false,
+      emphasis: {
+        itemStyle: {
+          color: 'yellow'
+        }
+      },
+      encode: {
+        tooltip: 2
+      },
+      data: data
+    }
+  ],
+  bmap: {
+    center: [116.46, 39.92],
+    zoom: 11.8,
+    roam: true,
+    mapStyle: {
+      styleJson: [
+        {
+          featureType: 'water',
+          elementType: 'all',
+          stylers: {
+            color: '#d1d1d1'
+          }
+        },
+        {
+          featureType: 'land',
+          elementType: 'all',
+          stylers: {
+            color: '#f3f3f3'
+          }
+        },
+        {
+          featureType: 'railway',
+          elementType: 'all',
+          stylers: {
+            visibility: 'off'
+          }
+        },
+        {
+          featureType: 'highway',
+          elementType: 'all',
+          stylers: {
+            color: '#999999'
+          }
+        },
+        {
+          featureType: 'highway',
+          elementType: 'labels',
+          stylers: {
+            visibility: 'off'
+          }
+        },
+        {
+          featureType: 'arterial',
+          elementType: 'geometry',
+          stylers: {
+            color: '#fefefe'
+          }
+        },
+        {
+          featureType: 'arterial',
+          elementType: 'geometry.fill',
+          stylers: {
+            color: '#fefefe'
+          }
+        },
+        {
+          featureType: 'poi',
+          elementType: 'all',
+          stylers: {
+            visibility: 'off'
+          }
+        },
+        {
+          featureType: 'green',
+          elementType: 'all',
+          stylers: {
+            visibility: 'off'
+          }
+        },
+        {
+          featureType: 'subway',
+          elementType: 'all',
+          stylers: {
+            visibility: 'off'
+          }
+        },
+        {
+          featureType: 'manmade',
+          elementType: 'all',
+          stylers: {
+            color: '#d1d1d1'
+          }
+        },
+        {
+          featureType: 'local',
+          elementType: 'all',
+          stylers: {
+            color: '#d1d1d1'
+          }
+        },
+        {
+          featureType: 'arterial',
+          elementType: 'labels',
+          stylers: {
+            visibility: 'off'
+          }
+        },
+        {
+          featureType: 'boundary',
+          elementType: 'all',
+          stylers: {
+            color: '#fefefe'
+          }
+        },
+        {
+          featureType: 'building',
+          elementType: 'all',
+          stylers: {
+            color: '#d1d1d1'
+          }
+        },
+        {
+          featureType: 'label',
+          elementType: 'labels.text.fill',
+          stylers: {
+            color: 'rgba(0,0,0,0)'
+          }
+        }
+      ]
+    }
+  }
+};
+
+    if (option && typeof option === 'object') {
+      myChart.setOption(option);
+    }
+
+    window.addEventListener('resize', myChart.resize);
+  </script>
+</body>
+</html>

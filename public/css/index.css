@@ -1,0 +1,83 @@
+/* .header{
+    height: 68px;
+    width: 100%;
+    border-bottom: 1px solid #e2e2e2;
+    font-size: 14px;
+    line-height: 68px;
+    text-align: center;
+    position: relative;
+} */
+
+
+
+/* CSS样式表 */
+
+      /* 整个页面 */
+      body {
+        margin: 0;
+        padding: 0;
+        background-color:rgb(240, 235, 252);
+        display: block;
+      }
+
+      /* 中心 */
+      .col-lg-9{
+        background-color: white;
+
+      }
+      /* 顶部部分 */
+      #top {
+        background-color: #f1f1f1;
+        padding: 20px;
+        text-align: center;
+      }
+
+      /* #top button {
+        float: center;
+      }
+      .dropdown {
+        float: right;
+        width: 15%;
+        background-color: #414040;
+      } */
+      /* 左侧部分 */
+      #left {
+        float: left;
+        width: 23%;
+        background-color: white;
+        height: 800px;
+        padding: 20px;
+      }
+
+      /* 右侧部分 */
+      #right {
+        float: right;
+        width: 75%;
+        background-color:white;
+        height: 800px;
+        padding: 20px;
+      }
+      #right > div {
+        display: none;
+        height: 800px;
+        padding: 20px;
+      }
+
+      /* 清除浮动 */
+      .clearfix::after {
+        content: "";
+        clear: both;
+        display: table;
+      }
+      
+      /* 左侧部分内的三个部分 */
+      .left-part {
+        height: 100px;
+        margin-bottom: 10px;
+        
+      }
+
+/* 左侧盒子颜色改变 */
+      .left-part:hover {
+        background-color: #ccc;
+      }

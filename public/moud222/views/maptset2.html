@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="../styles/common.css" rel="stylesheet">
+    <script src="../scripts/Plugin/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ol@v7.3.0/dist/ol.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.3.0/ol.css">
+    <script src="../scripts/test/anyang.js"></script>
+    <script src="../scripts/test/anyangdata.js"></script>
+    <!-- <script src="https://webapi.amap.com/maps?v=2.0&key=615a656f8fda817abfebe598af64bfb1"></script> -->
+    <!-- <script type="text/javascript" src="http://api.tianditu.gov.cn/api?v=4.0&tk=14c17def3d0f7a646e3d4dd23365fc06"></script> -->
+    <script src="../scripts/Plugin/bmap.min.js"></script>
+    
+
+    
+</head>
+<body>
+  <!--顶部-->
+<header class="header left">
+  <div class="left nav">
+      <ul>
+          <li class="nav_active"><i class="nav_1"></i><a href="index.html">门户</a> </li>
+          <li style="color: aqua;"><i class="nav_2"></i>占位 </li>
+          <li style="color: aqua;"><i class="nav_3"></i>占位 </li>
+          <li style="color: aqua;"><i class="nav_4"></i>占位 </li>
+          </ul>
+  </div>
+  <div class="header_center left" style="position:relative">
+      
+      <h2><strong><a>城市体检系统</a></strong></h2>
+
+  </div>
+  <div class="right nav text_right">
+      <ul>
+
+      </ul>
+  </div>
+
+</header>
+ 
+<div class="div_any">
+     <div class="left div_any01">
+       <div class="div_any_child">
+         <div class="div_any_title"><img src="../images/title_1.png">城市体检概况</div>
+         <p id="pieChart1" class="p_chart"></p>
+         </div>
+       <div class="div_any_child">
+        <div class="div_any_title"><img src="../images/title_2.png">安阳市概况</div>
+        <p id="histogramChart" class="p_chart"></p>
+       </div>
+      </div>
+     <div class="div_any02 left ">
+       <div class="div_any_child div_height">
+           <div class="div_any_title any_title_width"><img src="../images/title_0.png">安阳市 </div>
+           <div id="mapChart" style="width:97.5%;height:95%;display: inline-block;padding-left: 1.25%;padding-top:2.2%"></div>
+       </div>
+     </div>
+     <div class="right div_any01">
+      <div class="div_any_child">
+        <div class="div_any_title"><img src="../images/title_3.png">体检范围</div>
+        <p id="lineChart" class="p_chart"></p>
+    </div>
+      <div class="div_any_child">
+       <div class="div_any_title"><img src="../images/title_4.png">体检区域概况</div>
+       <div id="amap" style="width:97.5%;height:95%;display: inline-block;padding-left: 1.25%;padding-top:2.2%"></div>
+      </div>
+     </div>
+    
+  </div>    
+    
+  <script src="../scripts/opmap.js"></script>  
+</body>
+</html>
