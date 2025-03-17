@@ -17,6 +17,7 @@ const { predict } = require('./public/singlepm/singlepre.js');
 const { predictALL } = require('./public/predicte/predict.js')
 const { storeDataToMongo } = require('./moudel/storeToMongo.js');
 const { Coordinate } = require('./moudel/Coordinate.js');
+const { CoordinateJ } = require('./moudel/CoordinateJ.js');
 //设置跨域访问来源
 var corsOptions = {
   origin:" http://localhost:8080"
@@ -46,7 +47,10 @@ async function hourlyTask() {
 }
 
 // 启动时立即调用一次
-hourlyTask();
+ 
+
+
+// hourlyTask();
 
 // 设置每小时调用一次（1 小时 = 3600000 毫秒）
 setInterval(hourlyTask, 3600000); // 每 3600000 毫秒运行一次
@@ -66,6 +70,10 @@ app.use(cookieParser());
 //页面跳转
 app.get('/zhanshi', (req, res) => {
   res.render('zhanshi');
+});
+
+app.get('/jiankang', (req, res) => {
+  res.render('jiankang');
 });
 
 app.post('/dian', async (req, res) => {
@@ -104,7 +112,7 @@ app.post('/api/getData', async (req, res) => {
 //查询数据库
 app.post('/queryData', async (req, res) => {
   const { timestamp } = req.body; // 从请求体中获取时间戳
-
+  console.log(`Fetching data for time: ${timestamp}`);
   try {
       // 查询数据库
       const data = await Coordinate.findOne({ timestamp: new Date(timestamp) });
@@ -117,6 +125,22 @@ app.post('/queryData', async (req, res) => {
           const latestData = await Coordinate.findOne().sort({ timestamp: -1 });
           // console.log(latestData)
           return res.status(200).json(latestData); // 返回最新的数据
+      }
+  } catch (error) {
+      console.error('Error querying data:', error);
+      return res.status(500).send('Error querying data');
+  }
+});
+app.post('/queryJkData',async (req, res) => {
+  try {
+      // 查询数据库
+      const latestData = await CoordinateJ.findOne().sort({ _id: -1 });
+      // console.log(latestData)
+      if (latestData) {
+        
+          return res.status(200).json(latestData); // 返回找到的数据
+      } else {
+        return res.status(404).json({ message: 'No data found' });
       }
   } catch (error) {
       console.error('Error querying data:', error);

@@ -8,6 +8,7 @@ import rasterio
 from rasterio.transform import rowcol
 import lightgbm as lgb
 import json
+import sys
 
 # 获取气象数据
 import time
@@ -19,6 +20,10 @@ import csv
 # 读取CSV文件
 csv_file_path_point = './public/predicte/henanairpredict/xuanqudian.csv'
 airData = []
+
+requests.DEFAULT_RETRIES = 5
+s = requests.session()
+s.keep_alive = False
 
 with open(csv_file_path_point, newline='', encoding='utf-8') as csvfile:
     csv_reader = csv.DictReader(csvfile)
@@ -52,13 +57,16 @@ with open(csv_file_path_point, newline='', encoding='utf-8') as csvfile:
             'lon': longitude,
         }
 
-        response_press = requests.get('https://data.cma.cn/dataGis/multinewSource/getAPILiveDataInfoByEle', params=params1,
+        response_press = s.get('https://data.cma.cn/dataGis/multinewSource/getAPILiveDataInfoByEle', params=params1,
                                 headers=headers)
         press = json.loads(response_press.text)
 
-        response = requests.get('https://data.cma.cn/dataGis/multiSource/getAPILiveDataInfo', params=params,
+        response = s.get('https://data.cma.cn/dataGis/multiSource/getAPILiveDataInfo', params=params,
                                 headers=headers)
         response_data = json.loads(response.text)
+
+        if response_data == {}:
+            break
 
         # 初始化结果字典
         result = {
@@ -92,7 +100,9 @@ with open(csv_file_path_point, newline='', encoding='utf-8') as csvfile:
         # time.sleep(10)
 # print(airData)
 
-
+if airData == {}:
+    print('数据为空')
+    sys.exit()  # 终止程序                      
 
 # 提取经纬度和目标参数
 latitudes = np.array([float(d['latitude']) for d in airData])
@@ -220,6 +230,9 @@ df = pd.DataFrame(interpolated_results)
 # 进行预测
 X_new = df[features]
 df['PM2.5'] = bst_loaded.predict(X_new, num_iteration=bst_loaded.best_iteration)
+
+# Step 4: 将负值设置为零
+df['PM2.5'] = np.maximum(df['PM2.5'], 0)
 
 # 将预测结果与原数据保存到一个新的CSV文件
 output_file_path = 'test.csv'  # 替换为你想要保存的输出CSV文件路径

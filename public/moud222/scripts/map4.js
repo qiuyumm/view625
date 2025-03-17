@@ -2,6 +2,7 @@ var chart = echarts.init(document.getElementById('mapChart'), null, { renderer: 
 
 var gridWidth = 0.010854; // 1km 经度差
 var gridHeight = 0.008993; // 1km 纬度差
+const timeRange = generateTimeRange(8);
 
 // 初始化图表配置
 chart.setOption({
@@ -18,7 +19,7 @@ chart.setOption({
     tooltip: {
         trigger: 'item',
         formatter: function (params) {
-            return `PM2.5: ${params.value[2]}`;
+            return `PM2.5: ${params.value[2]?.toFixed(2)}`;
         }
     },
     visualMap: {
@@ -42,6 +43,21 @@ chart.setOption({
         inRange: {
             color: ['#74c01f', '#d4cf18', '#fa8718', '#d12b2b', '#fa8718', '#691888', '#000000'],
             opacity: 0.7
+        }
+    },
+    timeline: {
+        axisType: 'time',
+        autoPlay: false,
+        playInterval: 3000,
+        currentIndex: 0,
+        loop: false,
+        data: timeRange, // 生成过去8小时的时间轴数据
+        label: {
+            formatter: '{HH}:{mm}'
+        },
+        controlStyle: {
+            showNextBtn: true,
+            showPrevBtn: true
         }
     },
     series: [{
@@ -110,9 +126,20 @@ function aggregateData(data, gridWidth, gridHeight) {
     ]);
 }
 
+// 获取当前整点时间
+function getCurrentHour() {
+    const now = new Date();
+    now.setMinutes(0, 0, 0);
+    const localISOTime = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString();
+
+    // console.log(localISOTime)
+    return localISOTime;
+}
+
 // 请求数据并聚合
 function updateData() {
-    const timestamp = new Date().toISOString();
+    const timestamp = getCurrentHour(); // 获取整点时间
+    console.log('时间戳'+timestamp)
     fetch('/queryData', {
         method: 'POST',
         headers: {
@@ -216,9 +243,109 @@ const bmapComponent = chart.getModel().getComponent('bmap');
 const bmap = bmapComponent.getBMap();
 bmap.addEventListener('zoomend', renderDataByZoom); // 监听缩放事件
 bmap.addEventListener('dragend', renderDataByZoom); // 监听拖动事件
-
+bmap.addControl(new BMap.MapTypeControl(
+    {mapTypes: [BMAP_NORMAL_MAP,BMAP_SATELLITE_MAP,BMAP_HYBRID_MAP ]}
+    )); //添加地图类型控件
 // 初次加载数据
 updateData();
 
 // 定时更新数据
 setInterval(updateData, 600000 * 3);
+
+
+//时间轴
+// 生成过去8小时的时间范围
+function generateTimeRange(hours) {
+    const times = [];
+    const now = new Date();
+    
+    // 将当前时间取整到小时
+    now.setMinutes(0, 0, 0);
+
+    for (let i = 0; i <= hours; i++) {
+        const time = new Date(now.getTime() - i * 3600 * 1000);
+        times.unshift(time.toISOString()); // ISO 格式
+    }
+    return times;
+}
+
+
+
+// 监听时间轴变化事件
+chart.on('timelinechanged', function(event) {
+    const selectedTime = timeRange[event.currentIndex];
+    console.log("时间轴",selectedTime);
+    updateDataForTime(selectedTime);
+});
+
+
+// 更新数据并按指定时间渲染
+function updateDataForTime(time) {
+    console.log('时间戳'+time)
+    fetch('/queryData', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ timestamp: time }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        const mapdata = data.coordinates;
+
+        // 聚合不同粒度的数据
+        const aggregated1km = aggregateData(mapdata, 0.010854, 0.008993);
+        const aggregated2km = aggregateData(mapdata, 0.021708, 0.017986);
+        const aggregated5km = aggregateData(mapdata, 0.054270, 0.044965);
+        const aggregated10km = aggregateData(mapdata, 0.108540, 0.089930);
+
+        window.aggregatedData = {
+            '1km': { data: aggregated1km, gridWidth: 0.010854, gridHeight: 0.008993 },
+            '2km': { data: aggregated2km, gridWidth: 0.021708, gridHeight: 0.017986 },
+            '5km': { data: aggregated5km, gridWidth: 0.054270, gridHeight: 0.044965 },
+            '10km': { data: aggregated10km, gridWidth: 0.108540, gridHeight: 0.089930 }
+        };
+
+        renderDataByZoom();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+    
+
+// 初次页面加载时获取最新时间的数据
+// updateDataForTime(timeRange[timeRange.length - 1]);
+
+
+// // 每小时更新一次时间轴
+// setInterval(() => {
+//     const newTime = new Date();
+//     newTime.setMinutes(0, 0, 0); // 取整到小时
+
+//     // 检查时间轴是否已包含最新时间点
+//     const newTimeISO = newTime.toISOString();
+//     if (!timeRange.includes(newTimeISO)) {
+//         timeRange.push(newTimeISO);
+
+//         // 保持时间范围为最近 8 小时
+//         if (timeRange.length > 9) {
+//             timeRange.shift();
+//         }
+
+//         // 更新时间轴配置
+//         chart.setOption({
+//             baseOption: {
+//                 timeline: {
+//                     data: timeRange,
+//                     currentIndex: timeRange.length - 1
+//                 }
+//             }
+//         });
+
+//         // 请求最新时间的数据
+//         updateDataForTime(newTimeISO);
+//     }
+// }, 60 * 60 * 1000); // 每小时执行一次
+
